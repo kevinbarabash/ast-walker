@@ -5,6 +5,7 @@
   <title></title>
   <script src="../bower_components/esprima/esprima.js"></script>
   <script src="walker.js"></script>
+  <script src="stack.js"></script>
 </head>
 <body>
 <pre id="code">
@@ -39,6 +40,84 @@ console.log("hello, world");
   var ast = esprima.parse(code, options);
   console.log(ast);
 
-  handlers.Program(ast);
+
+  function Scope (name, start, end) {
+    this.name = name;
+    this.start = start;
+    this.end = end;
+    this.ranges = [];
+  }
+
+  function Range (start, end, value) {
+    this.start = start;
+    this.end = end;
+    this.value = value;
+  }
+
+
+  var rootScope = new Scope("root", 0, code.length);
+  var scopeStack = new Stack();
+  scopeStack.push(rootScope);
+
+
+  var printVarsAndParams = function (node) {
+    switch (node.type) {
+      case "VariableDeclarator":
+        console.log("var: " + node.id.name);
+        break;
+      case "FunctionExpression":
+      case "FunctionDeclaration":
+        node.params.forEach(function (param) {
+          console.log("param: " + param.name);
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
+  var buildScopesEnter = function (node) {
+    switch (node.type) {
+      case "FunctionExpression":
+        var body = node.body;
+        var scope = new Scope("<anonymous>", body.range[0], body.range[1]);
+        scopeStack.peek().ranges.push(scope);
+        scopeStack.push(scope);
+        node.params.forEach(function (param) {
+          scope.ranges.push({
+            name: param.name,
+            start: scope.start,
+            end: scope.end
+          });
+        });
+        break;
+      case "VariableDeclaration":
+        node.declarations.forEach(function (declarator) {
+          var scope = scopeStack.peek();
+          scope.ranges.push({
+            name: declarator.id.name,
+            start: declarator.id.range[1],
+            end: scope.end
+          });
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
+  var buildScopeLeave = function (node) {
+    switch (node.type) {
+      case "FunctionExpression":
+        scopeStack.pop();
+        break;
+      default:
+        break;
+    }
+  };
+
+  setCallback(buildScopesEnter, buildScopeLeave);
+
+  walk(ast);
 
 </script>
