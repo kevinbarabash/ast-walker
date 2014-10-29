@@ -8,16 +8,12 @@ function Walker() {
 Walker.prototype.walk = function (node) {
     if (!node) {
         return; // TODO: proper validation
+        // for now we assume that the AST is properly formed
     }
     this.enter(node);
     this[node.type](node);
     this.exit(node);
 };
-
-
-var handlers = {};
-
-
 
 Walker.prototype.walkEach = function (nodes) {
     for (var i = 0; i < nodes.length; i++) {
