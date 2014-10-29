@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+  <script src="../bower_components/esprima/esprima.js"></script>
+  <script src="../src/walker.js"></script>
+</head>
+<body>
+<pre id="code">
+var x = 5;
+var y = 10;
+
+var foo = function(x) {
+  x = 20;
+}
+
+var bar = function(y) {
+  y = 30;
+
+  var foobar = function (y) {
+    y = 50;
+  }
+}
+
+console.log("hello, world");
+</pre>
+</body>
+</html>
+<script>
+
+  var code = document.getElementById("code").innerText;
+
+  var ast = esprima.parse(code);
+
+  var walker = new Walker();
+
+  walker.exit = function (node) {
+    // inject yields on leave
+    console.log(node.type);
+  };
+
+  walker.walk(ast);
+
+</script>

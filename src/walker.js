@@ -1,230 +1,227 @@
-var enter = function(node) {
+/* simple tree walker for Parser API style AST trees */
 
-};
-
-var leave = function(node) {
-
-};
-
-function setCallback(_enter, _leave) {
-    enter = _enter || enter;
-    leave = _leave || leave;
+function Walker() {
+    this.enter = function (node) { };
+    this.exit = function (node) { };
 }
 
-var handlers = {};
-
-var walk = function(node) {
+Walker.prototype.walk = function (node) {
     if (!node) {
         return; // TODO: proper validation
     }
-    enter(node);
-    handlers[node.type](node);
-    leave(node);
+    this.enter(node);
+    this[node.type](node);
+    this.exit(node);
 };
 
-var walkEach = function (nodes) {
+
+var handlers = {};
+
+
+
+Walker.prototype.walkEach = function (nodes) {
     for (var i = 0; i < nodes.length; i++) {
-        walk(nodes[i]);
+        this.walk(nodes[i]);
     }
 };
 
-handlers.AssignmentExpression = function (node) {
-    walk(node.left);
-    walk(node.right);
+Walker.prototype.AssignmentExpression = function (node) {
+    this.walk(node.left);
+    this.walk(node.right);
 };
 
-handlers.ArrayExpression = function (node) {
-    walkEach(node.elements);
+Walker.prototype.ArrayExpression = function (node) {
+    this.walkEach(node.elements);
 };
 
-handlers.BlockStatement = function (node) {
-    walkEach(node.body);
+Walker.prototype.BlockStatement = function (node) {
+    this.walkEach(node.body);
 };
 
-handlers.BinaryExpression = function (node) {
-    walk(node.left);
-    walk(node.right);
+Walker.prototype.BinaryExpression = function (node) {
+    this.walk(node.left);
+    this.walk(node.right);
 };
 
-handlers.BreakStatement = function (node) {
-    walk(node.label);
+Walker.prototype.BreakStatement = function (node) {
+    this.walk(node.label);
 };
 
-handlers.CallExpression = function (node) {
-    walk(node.callee);
-    walkEach(node.arguments);
+Walker.prototype.CallExpression = function (node) {
+    this.walk(node.callee);
+    this.walkEach(node.arguments);
 };
 
-handlers.CatchClause = function (node) {
-    walk(node.param);
-    walk(node.guard);
-    walk(node.body);
+Walker.prototype.CatchClause = function (node) {
+    this.walk(node.param);
+    this.walk(node.guard);
+    this.walk(node.body);
 };
 
-handlers.ConditionalExpression = function (node) {
-    walk(node.test);
-    walk(node.alternate);
-    walk(node.consequent);
+Walker.prototype.ConditionalExpression = function (node) {
+    this.walk(node.test);
+    this.walk(node.alternate);
+    this.walk(node.consequent);
 };
 
-handlers.ContinueStatement = function (node) {
-    walk(node.label);
+Walker.prototype.ContinueStatement = function (node) {
+    this.walk(node.label);
 };
 
-handlers.DoWhileStatement = function (node) {
-    walk(node.body);
-    walk(node.test);
+Walker.prototype.DoWhileStatement = function (node) {
+    this.walk(node.body);
+    this.walk(node.test);
 };
 
-handlers.DebuggerStatement = function (node) {
-
-};
-
-handlers.EmptyStatement = function (node) {
+Walker.prototype.DebuggerStatement = function (node) {
 
 };
 
-handlers.ExpressionStatement = function (node) {
-    walk(node.expression);
-};
-
-handlers.ForStatement = function (node) {
-    walk(node.init);
-    walk(node.test);
-    walk(node.update);
-    walk(node.body);
-};
-
-handlers.ForInStatement = function (node) {
-    walk(node.left);
-    walk(node.right);
-    walk(node.body);
-};
-
-handlers.ForOfStatement = function (node) {
-    walk(node.left);
-    walk(node.right);
-    walk(node.body);
-};
-
-handlers.FunctionDeclaration = function (node) {
-    walk(node.id);
-    walkEach(node.params);
-    walk(node.rest);
-    walk(node.body);
-};
-
-handlers.FunctionExpression = function (node) {
-    walk(node.id);
-    walkEach(node.params);
-    walk(node.rest);
-    walk(node.body);
-};
-
-handlers.Identifier = function (node) {
+Walker.prototype.EmptyStatement = function (node) {
 
 };
 
-handlers.IfStatement = function (node) {
-    walk(node.text);
-    walk(node.consequent);
-    walk(node.alternate);
+Walker.prototype.ExpressionStatement = function (node) {
+    this.walk(node.expression);
 };
 
-handlers.Literal = function (node) {
-
+Walker.prototype.ForStatement = function (node) {
+    this.walk(node.init);
+    this.walk(node.test);
+    this.walk(node.update);
+    this.walk(node.body);
 };
 
-handlers.LabeledStatement = function (node) {
-    walk(node.body);
+Walker.prototype.ForInStatement = function (node) {
+    this.walk(node.left);
+    this.walk(node.right);
+    this.walk(node.body);
 };
 
-handlers.LogicalExpression = function (node) {
-    walk(node.left);
-    walk(node.right);
+Walker.prototype.ForOfStatement = function (node) {
+    this.walk(node.left);
+    this.walk(node.right);
+    this.walk(node.body);
 };
 
-handlers.MemberExpression = function (node) {
-    walk(node.object);
-    walk(node.property);
+Walker.prototype.FunctionDeclaration = function (node) {
+    this.walk(node.id);
+    this.walkEach(node.params);
+    this.walk(node.rest);
+    this.walk(node.body);
 };
 
-handlers.NewExpression = function (node) {
-    walk(node.callee);
-    walk(node.arguments);
+Walker.prototype.FunctionExpression = function (node) {
+    this.walk(node.id);
+    this.walkEach(node.params);
+    this.walk(node.rest);
+    this.walk(node.body);
 };
 
-handlers.ObjectExpression = function (node) {
-    walkEach(node.properties);
-};
-
-handlers.Program = function (node) {
-    walkEach(node.body);
-};
-
-handlers.Property = function (node) {
-    walk(node.key);
-    walk(node.value);
-};
-
-handlers.ReturnStatement = function (node) {
-    walk(node.argument);
-};
-
-handlers.SequenceExpression = function (node) {
-    walkEach(node.expressions);
-};
-
-handlers.SwitchStatement = function (node) {
-    walk(node.discriminant);
-    walkEach(node.cases);
-};
-
-handlers.SwitchCase = function (node) {
-    walk(node.test);
-    walkEach(node.consequent);
-};
-
-handlers.ThisExpression = function (node) {
+Walker.prototype.Identifier = function (node) {
 
 };
 
-handlers.ThrowStatement = function (node) {
-    walk(node.argument);
+Walker.prototype.IfStatement = function (node) {
+    this.walk(node.text);
+    this.walk(node.consequent);
+    this.walk(node.alternate);
 };
 
-handlers.TryStatement = function (node) {
-    walk(node.block);
-    walk(node.handler);
-    walkEach(node.guardedHandlers);
-    walk(node.finalizer);
+Walker.prototype.Literal = function (node) {
+
 };
 
-handlers.UnaryExpression = function (node) {
-    walk(node.argument);
+Walker.prototype.LabeledStatement = function (node) {
+    this.walk(node.body);
 };
 
-handlers.UpdateExpression = function (node) {
-    walk(node.argument);
+Walker.prototype.LogicalExpression = function (node) {
+    this.walk(node.left);
+    this.walk(node.right);
 };
 
-handlers.VariableDeclaration = function (node) {
-    walkEach(node.declarations);
+Walker.prototype.MemberExpression = function (node) {
+    this.walk(node.object);
+    this.walk(node.property);
 };
 
-handlers.VariableDeclarator = function (node) {
-    walk(node.id);
-    walk(node.init);
+Walker.prototype.NewExpression = function (node) {
+    this.walk(node.callee);
+    this.walk(node.arguments);
 };
 
-handlers.WhileStatement = function (node) {
-    walk(node.test);
-    walk(node.body);
+Walker.prototype.ObjectExpression = function (node) {
+    this.walkEach(node.properties);
 };
 
-handlers.WithStatement = function (node) {
-    walk(node.object);
-    walk(node.body);
+Walker.prototype.Program = function (node) {
+    this.walkEach(node.body);
+};
+
+Walker.prototype.Property = function (node) {
+    this.walk(node.key);
+    this.walk(node.value);
+};
+
+Walker.prototype.ReturnStatement = function (node) {
+    this.walk(node.argument);
+};
+
+Walker.prototype.SequenceExpression = function (node) {
+    this.walkEach(node.expressions);
+};
+
+Walker.prototype.SwitchStatement = function (node) {
+    this.walk(node.discriminant);
+    this.walkEach(node.cases);
+};
+
+Walker.prototype.SwitchCase = function (node) {
+    this.walk(node.test);
+    this.walkEach(node.consequent);
+};
+
+Walker.prototype.ThisExpression = function (node) {
+
+};
+
+Walker.prototype.ThrowStatement = function (node) {
+    this.walk(node.argument);
+};
+
+Walker.prototype.TryStatement = function (node) {
+    this.walk(node.block);
+    this.walk(node.handler);
+    this.walkEach(node.guardedHandlers);
+    this.walk(node.finalizer);
+};
+
+Walker.prototype.UnaryExpression = function (node) {
+    this.walk(node.argument);
+};
+
+Walker.prototype.UpdateExpression = function (node) {
+    this.walk(node.argument);
+};
+
+Walker.prototype.VariableDeclaration = function (node) {
+    this.walkEach(node.declarations);
+};
+
+Walker.prototype.VariableDeclarator = function (node) {
+    this.walk(node.id);
+    this.walk(node.init);
+};
+
+Walker.prototype.WhileStatement = function (node) {
+    this.walk(node.test);
+    this.walk(node.body);
+};
+
+Walker.prototype.WithStatement = function (node) {
+    this.walk(node.object);
+    this.walk(node.body);
 };
 
 // TODO: bring browserify into the workflow

@@ -3,8 +3,8 @@
 <head lang="en">
   <meta charset="UTF-8">
   <title></title>
-  <script src="../bower_components/esprima/esprima.js"></script>
-  <script src="walker.js"></script>
+  <script src="../../bower_components/esprima/esprima.js"></script>
+  <script src="../../src/walker.js"></script>
   <script src="stack.js"></script>
 </head>
 <body>
@@ -106,7 +106,7 @@ console.log("hello, world");
     }
   };
 
-  var buildScopeLeave = function (node) {
+  var buildScopeExit = function (node) {
     switch (node.type) {
       case "FunctionExpression":
         scopeStack.pop();
@@ -116,8 +116,13 @@ console.log("hello, world");
     }
   };
 
-  setCallback(buildScopesEnter, buildScopeLeave);
+  var walker = new Walker();
 
-  walk(ast);
+  walker.enter = buildScopesEnter;
+  walker.exit = buildScopeExit;
 
+  walker.walk(ast);
+
+
+  console.log(rootScope);
 </script>
