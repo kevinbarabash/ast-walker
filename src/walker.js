@@ -1,6 +1,9 @@
 /* simple tree walker for Parser API style AST trees */
 
 function Walker() {
+    this.shouldWalk = function (node) {
+        return true;
+    };
     this.enter = function (node) { };
     this.exit = function (node) { };
 }
@@ -10,9 +13,11 @@ Walker.prototype.walk = function (node) {
         return; // TODO: proper validation
         // for now we assume that the AST is properly formed
     }
-    this.enter(node);
-    this[node.type](node);
-    this.exit(node);
+    if (this.shouldWalk(node)) {
+        this.enter(node);
+        this[node.type](node);
+        this.exit(node);
+    }
 };
 
 Walker.prototype.walkEach = function (nodes) {
