@@ -1,6 +1,6 @@
 {
   "name": "ast-walker",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/kevinb7/ast-walker",
   "authors": [
     "Kevin Barabash <kevinb7@gmail.com>"
@@ -14,7 +14,7 @@
     "test",
     "tests"
   ],
-  "dependencies": {
+  "devDependencies": {
     "esprima": "~1.2.2"
   }
 }
