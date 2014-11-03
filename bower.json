@@ -1,12 +1,13 @@
 {
   "name": "ast-walker",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/kevinb7/ast-walker",
   "authors": [
     "Kevin Barabash <kevinb7@gmail.com>"
   ],
   "description": "walker for ASTs produced by esprima",
   "license": "MIT",
+  "main": "walker.js",
   "ignore": [
     "**/.*",
     "node_modules",
