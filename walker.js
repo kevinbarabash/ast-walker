@@ -149,7 +149,7 @@ Walker.prototype.MemberExpression = function (node) {
 
 Walker.prototype.NewExpression = function (node) {
     this.walk(node.callee, "callee", node);
-    this.walk(node.arguments, "arguments", node);
+    this.walkEach(node.arguments, "arguments", node);
 };
 
 Walker.prototype.ObjectExpression = function (node) {
